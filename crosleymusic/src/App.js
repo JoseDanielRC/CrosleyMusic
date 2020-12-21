@@ -1,11 +1,11 @@
 import Nav from './components/Nav'
 import Main from './components/Main'
-import { Button } from 'reactstrap';
 import React, { Component, useEffect, useState } from 'react';
-import './App.css';
+import './Login.css';
 import Login from './Login';
 import fire from './Fire';
 import firestore from './Fire';
+import "./App.scss";
 const App = () => {
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -122,7 +122,7 @@ const App = () => {
     authListener();
   }, [])
   return (
-    <div className="App">
+    <div>
       {user ? (
         <>
           <div className="outerWrap">
