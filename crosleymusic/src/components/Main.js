@@ -9,8 +9,12 @@ const Main = () => {
       <div className="mainContent">
         <Switch>
           <Route path="/" exact component={Categories}></Route>
-          <Route path="/search">Search</Route>
-          <Route path="/your-library">Your library</Route>
+          <Route path="/search">
+            <h1>Naruto es el mero queso</h1>
+          </Route>
+          <Route path="/your-library">
+            <h1>Viva Naruto</h1>
+          </Route>
           <Route path="/playlist/:id" component={PlaylistPage}></Route>
         </Switch>
       </div>

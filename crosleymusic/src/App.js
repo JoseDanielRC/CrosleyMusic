@@ -1,28 +1,28 @@
-import Nav from './components/Nav'
-import Main from './components/Main'
-import React, { Component, useEffect, useState } from 'react';
-import './Login.css';
-import Login from './Login';
-import fire from './Fire';
-import firestore from './Fire';
+import Nav from "./components/Nav";
+import Main from "./components/Main";
+import React, { Component, useEffect, useState } from "react";
+import "./Login.css";
+import Login from "./Login";
+import fire from "./Fire";
+import firestore from "./Fire";
 import "./App.scss";
 const App = () => {
-  const [user, setUser] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [hasAccount, setHasAccount] = useState(false);
-  const [docid, setDocid] = useState('');
+  const [docid, setDocid] = useState("");
 
   const clearInputs = () => {
     setEmail("");
     setPassword("");
-  }
+  };
   const clearErrors = () => {
     setEmailError("");
     setPasswordError("");
-  }
+  };
   const handleLogin = async () => {
     document.getElementById("titulo").innerHTML = "Iniciar Sesion";
     clearErrors();
@@ -40,10 +40,10 @@ const App = () => {
             setPasswordError(err.message);
             break;
         }
-        alert(err)
-      }).then(() => {
+        alert(err);
       })
-  }
+      .then(() => {});
+  };
   const handleSignup = async () => {
     document.getElementById("titulo").innerHTML = "Crear Cuenta";
     clearErrors();
@@ -73,21 +73,22 @@ const App = () => {
             setPasswordError(err.message);
             break;
         }
-      })
+      });
     //setUID(fire.auth().currentUser.uid);
-  }
+  };
   const handleLogout = () => {
-    fire.auth().signOut()
-  }
+    fire.auth().signOut();
+    window.location.reload();
+  };
   const authListener = async () => {
     await fire.auth().onAuthStateChanged((user) => {
-        if (user) {
-            clearInputs();
-            setUser(user);
-          }
-        })
+      if (user) {
+        clearInputs();
+        setUser(user);
+      }
+    });
 
-           /* fire.firestore().collection('users').where("id", "==", user.uid).get().then(DocumentSnapshot => {
+    /* fire.firestore().collection('users').where("id", "==", user.uid).get().then(DocumentSnapshot => {
                 DocumentSnapshot.docs.forEach(doc => {
                     if (doc.exists) {
                         doc.data().tarjetas.forEach(tar => {
@@ -117,45 +118,43 @@ const App = () => {
             // localStorage.removeItem('user');
         }
     })*/
-  }
+  };
   useEffect(() => {
     authListener();
-  }, [])
+  }, []);
   return (
     <div>
       {user ? (
         <>
           <div className="outerWrap">
             <div className="App">
-              <Nav />
+              <Nav handleLogout={handleLogout} />
               <Main />
             </div>
             <div className="musicControls">
               Crosley Music Copyright ©2020
-        <br />
-        Jasser Ramos - Elias Giron <br /> Luis Enriquez
-      </div>
+              <br />
+              Jasser Ramos - Elias Giron <br /> Luis Enriquez
+            </div>
           </div>
         </>
       ) : (
-          <>
-            <Login
-              email={email}
-              setEmail={setEmail}
-              password={password}
-              setPassword={setPassword}
-              handleLogin={handleLogin}
-              handleSignup={handleSignup}
-              hasAccount={hasAccount}
-              setHasAccount={setHasAccount}
-              emailError={emailError}
-              passwordError={passwordError}
-            />
-          </>
-        )}
-
-
+        <>
+          <Login
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            handleLogin={handleLogin}
+            handleSignup={handleSignup}
+            hasAccount={hasAccount}
+            setHasAccount={setHasAccount}
+            emailError={emailError}
+            passwordError={passwordError}
+          />
+        </>
+      )}
     </div>
   );
-}
+};
 export default App;

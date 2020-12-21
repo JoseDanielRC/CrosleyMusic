@@ -202,8 +202,12 @@ const Playlists = (props) => {
   //useEffect(dataPlaylists);
   return (
     <div>
-      <div>
-        <Button color="secondary" onClick={() => setModalnsertarAlbum(true)}>
+      <div style={{ width: "200px" }}>
+        <Button
+          color="secondary"
+          maxWidth="100px"
+          onClick={() => setModalnsertarAlbum(true)}
+        >
           Agregar Album+
         </Button>
       </div>
