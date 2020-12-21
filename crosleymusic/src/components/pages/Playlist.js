@@ -181,12 +181,14 @@ const PlaylistPage = (props) => {
           <div className="playlistPageContent">
             <p className="smallText uppercase bold">Album</p>
             <h1>{album.name}</h1>
-            <Button
-              color="secondary"
-              onClick={() => setModalnsertarCancion(true)}
-            >
-              Agregar Cancion+
-            </Button>{" "}
+            <div style={{ width: "200px" }}>
+              <Button
+                color="secondary"
+                onClick={() => setModalnsertarCancion(true)}
+              >
+                Agregar Cancion+
+              </Button>
+            </div>
             <p className="tagline">{album.desc}</p>
             <div className="playlistPageDesc">
               <p className="spotify">CrosleyMusic</p>

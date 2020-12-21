@@ -3,8 +3,9 @@ import { ReactComponent as HomeIcon } from "../svgs/home.svg";
 import { ReactComponent as SearchIcon } from "../svgs/search.svg";
 import { ReactComponent as LibraryIcon } from "../svgs/library.svg";
 import { Link } from "react-router-dom";
-
-const Nav = () => {
+import { Button } from "reactstrap";
+const Nav = (props) => {
+  const { handleLogout } = props;
   return (
     <div className="navBar">
       <div className="logo">
@@ -38,6 +39,11 @@ const Nav = () => {
       <div className="cookies">
         <span>Cookies</span>
         <span>Privacy Policy</span>
+        <div style={{ paddingLeft: "15px", width: "200px" }}>
+          <Button color="danger" maxWidth="100px" onClick={handleLogout}>
+            Cerrar Sesion
+          </Button>
+        </div>
       </div>
     </div>
   );
