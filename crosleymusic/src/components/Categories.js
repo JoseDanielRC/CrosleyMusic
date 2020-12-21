@@ -1,30 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react'
-import Playlists from './Playlists'
+import React, { useRef, useEffect, useState } from "react";
+import Playlists from "./Playlists";
 
 const Categories = () => {
-  const [limiter, setLimiter] = useState(0)
-  const mainInnerRef = useRef()
+  const [limiter, setLimiter] = useState(0);
+  const mainInnerRef = useRef();
   const dataCategories = [
     {
       id: 1,
-      name: 'Focus',
-      tagline: 'Music to help you concentrate',
+      name: "Crosley Music Playlist",
+      tagline: "Musica para tus oidos",
     },
-    {
-      id: 2,
-      name: 'Mood',
-      tagline: 'Playlists to match your mood',
-    },
-    {
-      id: 3,
-      name: 'Soundtrack your home',
-      tagline: '',
-    },
-    {
-      id: 4,
-      name: 'Kick back this Sunday...',
-    },
-  ]
+  ];
 
   useEffect(() => {
     // function
@@ -32,32 +18,31 @@ const Categories = () => {
       // calculation
       const calculation = Math.floor(
         mainInnerRef.current.getBoundingClientRect().width / 195
-      )
+      );
 
-      setLimiter(calculation)
-    }
+      setLimiter(calculation);
+    };
 
-    handleWindowResize()
+    handleWindowResize();
 
     // assign event listener
-    window.addEventListener('resize', handleWindowResize)
+    window.addEventListener("resize", handleWindowResize);
 
     // remove event listener
-    return () => window.removeEventListener('resize', handleWindowResize)
-  }, [])
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
 
   return (
     <div className="mainInner" ref={mainInnerRef}>
       {dataCategories.map((category, id) => (
         <div className="cardsWrap" key={id}>
           <h2>{category.name}</h2>
-          {/* <span className="seeAll">SEE ALL</span> */}
           <p className="subText">{category.tagline}</p>
-          <Playlists category_id={category.id} limiter={limiter} />
+          <Playlists category_id={category.id} />
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default Categories
+export default Categories;
