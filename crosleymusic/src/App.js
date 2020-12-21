@@ -6,6 +6,10 @@ import Login from "./Login";
 import fire from "./Fire";
 import firestore from "./Fire";
 import "./App.scss";
+import getWeb3 from "./getWeb3";
+import Web3 from "web3";
+import Migrations from "./contracts/Migrations.json";
+
 const App = () => {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
@@ -14,7 +18,10 @@ const App = () => {
   const [passwordError, setPasswordError] = useState("");
   const [hasAccount, setHasAccount] = useState(false);
   const [docid, setDocid] = useState("");
-
+  let web3 = null;
+  let accounts = null;
+  let contract = null;
+  let [albumAdresses, setAlbumAdresses] = useState([]);
   const clearInputs = () => {
     setEmail("");
     setPassword("");
@@ -87,40 +94,51 @@ const App = () => {
         setUser(user);
       }
     });
+  };
+  const addAlbumAddresses = async (addressAdd) => {
+    albumAdresses.push(addressAdd);
+  };
+  const web3blockchain = async () => {
+    try {
+      // Get network provider and web3 mainInstance.
+      const _web3 = await getWeb3();
+      // Use web3 to get the user's accounts.
+      const accounts = await _web3.eth.getAccounts();
 
-    /* fire.firestore().collection('users').where("id", "==", user.uid).get().then(DocumentSnapshot => {
-                DocumentSnapshot.docs.forEach(doc => {
-                    if (doc.exists) {
-                        doc.data().tarjetas.forEach(tar => {
-                            if (tar != null) {
-                                const name = tar.name;
-                                const number = tar.number;
-                                const expiry = tar.expiry;
-                                const cvc = tar.cvc;
-                                const obj = {
-                                    'name': name,
-                                    'expiry': expiry,
-                                    'number': number,
-                                    'cvc': cvc
-                                }
-                                tarjetasdb.push(obj);
-                            }
-                        });
-                        setCards(tarjetasdb);
-                        setDocid(doc.id);
-                    } else {
-                        alert('no existeeee');
-                    }
-                })
-            });
-        } else {
-            setUser("");
-            // localStorage.removeItem('user');
-        }
-    })*/
+      // Get the contract mainInstance.
+      const networkId = 5777;
+      //const web32 = new Web3("https://localhost:5777");
+      // const networkId = await _web3.eth.net.getId();
+      const deployedNetwork = Migrations.networks[networkId];
+      const mainInstance = new _web3.eth.Contract(
+        Migrations.abi,
+        deployedNetwork && deployedNetwork.address
+      );
+      console.log(mainInstance);
+      mainInstance.address = "0xDc0C23094ebd97506deC5204Cc3cDf489eD8536f";
+      alert(JSON.stringify(accounts[0]));
+      mainInstance.methods
+        .setData(
+          "YHLQMDLG",
+          "Bad Bunny",
+          "https://images.genius.com/aa1c8b77f382d4d32ad97002ab823680.1000x1000x1.png"
+        )
+        .send({ from: accounts[0] });
+      // Set web3, accounts, and contract to the state, and then proceed with an
+      // example of interacting with the contract's methods.
+      console.log("methods", mainInstance.methods);
+      // this.setState({ web3, accounts, contract: mainInstance }, this.initiate);
+    } catch (error) {
+      // Catch any errors for any of the above operations.
+      /*alert(
+        `Failed to load web3, accounts, or contract. Check console for details.`
+      );*/
+      alert(error);
+    }
   };
   useEffect(() => {
     authListener();
+    web3blockchain();
   }, []);
   return (
     <div>
