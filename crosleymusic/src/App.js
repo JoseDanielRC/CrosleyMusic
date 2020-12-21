@@ -80,11 +80,14 @@ const App = () => {
     fire.auth().signOut()
   }
   const authListener = async () => {
-    /*await fire.auth().onAuthStateChanged((user) => {
+    await fire.auth().onAuthStateChanged((user) => {
         if (user) {
             clearInputs();
             setUser(user);
-            fire.firestore().collection('users').where("id", "==", user.uid).get().then(DocumentSnapshot => {
+          }
+        })
+
+           /* fire.firestore().collection('users').where("id", "==", user.uid).get().then(DocumentSnapshot => {
                 DocumentSnapshot.docs.forEach(doc => {
                     if (doc.exists) {
                         doc.data().tarjetas.forEach(tar => {
@@ -122,6 +125,17 @@ const App = () => {
     <div className="App">
       {user ? (
         <>
+          <div className="outerWrap">
+            <div className="App">
+              <Nav />
+              <Main />
+            </div>
+            <div className="musicControls">
+              Crosley Music Copyright ©2020
+        <br />
+        Jasser Ramos - Elias Giron <br /> Luis Enriquez
+      </div>
+          </div>
         </>
       ) : (
           <>
