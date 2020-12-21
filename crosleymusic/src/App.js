@@ -104,21 +104,19 @@ const App = () => {
       const _web3 = await getWeb3();
       // Use web3 to get the user's accounts.
       const accounts = await _web3.eth.getAccounts();
-      const address = "0x6fD277F97437458540EC2031ae5E82f4b0f2E8ad";
+
       // Get the contract mainInstance.
-      //const networkId = 5777;
+      const networkId = 5777;
       //const web32 = new Web3("https://localhost:5777");
-      const networkId = await _web3.eth.net.getId();
-      alert(networkId);
+      // const networkId = await _web3.eth.net.getId();
       const deployedNetwork = Migrations.networks[networkId];
       const mainInstance = new _web3.eth.Contract(
         Migrations.abi,
-        address
-        /*""*/
+        deployedNetwork && deployedNetwork.address
       );
-      mainInstance.address = address;
       console.log(mainInstance);
-      alert(JSON.stringify(accounts));
+      mainInstance.address = "0xDc0C23094ebd97506deC5204Cc3cDf489eD8536f";
+      alert(JSON.stringify(accounts[0]));
       mainInstance.methods
         .setData(
           "YHLQMDLG",
@@ -126,10 +124,9 @@ const App = () => {
           "https://images.genius.com/aa1c8b77f382d4d32ad97002ab823680.1000x1000x1.png"
         )
         .send({ from: accounts[0] });
-
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      console.log(mainInstance.data);
+      console.log("methods", mainInstance.methods);
       // this.setState({ web3, accounts, contract: mainInstance }, this.initiate);
     } catch (error) {
       // Catch any errors for any of the above operations.
