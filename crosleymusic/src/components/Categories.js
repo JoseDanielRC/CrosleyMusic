@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import Playlists from "./Playlists";
 
-const Categories = () => {
+const Categories = (props) => {
+  const { albumes, canciones, addAlbum } = props;
   const [limiter, setLimiter] = useState(0);
   const mainInnerRef = useRef();
   const dataCategories = [
@@ -34,13 +35,17 @@ const Categories = () => {
 
   return (
     <div className="mainInner" ref={mainInnerRef}>
-      {dataCategories.map((category, id) => (
-        <div className="cardsWrap" key={id}>
-          <h2>{category.name}</h2>
-          <p className="subText">{category.tagline}</p>
-          <Playlists category_id={category.id} />
-        </div>
-      ))}
+      <div className="cardsWrap" key={dataCategories[0].id}>
+        <h2>{dataCategories[0].name}</h2>
+        <p className="subText">{dataCategories[0].tagline}</p>
+        <Playlists
+          albumes={albumes}
+          canciones={canciones}
+          category_id={dataCategories[0].id}
+          addAlbum={addAlbum}
+          addSong={props.addSong}
+        />
+      </div>
     </div>
   );
 };

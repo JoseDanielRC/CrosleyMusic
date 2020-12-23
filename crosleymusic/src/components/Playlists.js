@@ -11,8 +11,11 @@ import {
 } from "reactstrap";
 import { Confirm } from "./Confirm.js";
 import "./ConfirmStyle.css";
-
+import getWeb3 from "../getWeb3";
+import Albums from "../contracts/Albums.json";
 const Playlists = (props) => {
+  let [agregar, setAgregar] = useState(false);
+  const { albumes, canciones, addAlbum } = props;
   const [InsertarAlbum, setModalnsertarAlbum] = useState(false);
   const [dataPlaylists, setdataPlaylist] = useState([
     {
@@ -154,7 +157,7 @@ const Playlists = (props) => {
   ]);
 
   let matchedPlaylists = dataPlaylists.filter((playlist) => playlist);
-  const agregarAlbum = () => {
+  const agregarAlbum = async () => {
     const nuevosAlbums = [];
     const id2 = dataPlaylists[dataPlaylists.length - 1].id + 1;
     const nombre2 = document.getElementById("nombre").value;
@@ -174,6 +177,8 @@ const Playlists = (props) => {
     }
     setdataPlaylist(nuevosAlbums);
     renderPlaylists();
+    addAlbum(id2, nombre2, artista2);
+    setAgregar(true);
     Confirm.open({
       title: "Aviso",
       message: `¡Album ${nombre2} Agregado!`,
@@ -181,6 +186,47 @@ const Playlists = (props) => {
     });
     setModalnsertarAlbum(false);
   };
+  const agregarAlbumBlockchain = async () => {
+    try {
+      let _web3 = await new getWeb3();
+      let accounts = await new _web3.eth.getAccounts();
+      let mainInstance2 = await new _web3.eth.Contract(
+        Albums.abi,
+        "0xDD94B007C727457294f01f6225B81ba522014BaD"
+      );
+      mainInstance2.address = "0xDD94B007C727457294f01f6225B81ba522014BaD";
+      mainInstance2.methods
+        .addAlbum(
+          dataPlaylists[dataPlaylists.length - 1].id + 1,
+          document.getElementById("nombre").value,
+          document.getElementById("artista").value
+        )
+        .send({ from: accounts[0] });
+      setAgregar(false);
+    } catch (error) {}
+  };
+  const llenarPlaylist = () => {
+    //alert("Playlist, ", JSON.stringify(props.albumes));
+    const albumesNuevos = [];
+    const img2 =
+      "https://images.unsplash.com/photo-1587169544748-d21bd810f57e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80";
+    for (let index = 0; index < albumes.length; index++) {
+      const album = albumes[index];
+      albumesNuevos.push({
+        id: album.idAlbum,
+        category_id: 1,
+        name: album.name,
+        img: img2,
+        desc: albumes.artista,
+      });
+    }
+    //alert(JSON.stringify(albumesNuevos));
+    setdataPlaylist(albumesNuevos);
+    renderPlaylists();
+  };
+  useEffect(() => {
+    llenarPlaylist();
+  }, []);
   const renderPlaylists = () => {
     return matchedPlaylists.map((playlist, id) => (
       <Link to={`/playlist/` + playlist.id} key={id}>

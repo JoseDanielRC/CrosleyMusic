@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ReactComponent as PlayIcon } from "../../svgs/play.svg";
 import { ReactComponent as HeartIcon } from "../../svgs/heart.svg";
@@ -13,7 +13,8 @@ import {
 } from "reactstrap";
 import { Confirm } from "../Confirm.js";
 import "../ConfirmStyle.css";
-
+import Migrations from "./Migrations.json";
+import getWeb3 from "./getWeb3";
 const PlaylistPage = (props) => {
   let { id } = useParams();
   let [canciones, setCanciones] = useState([
@@ -25,6 +26,24 @@ const PlaylistPage = (props) => {
       idPlaylist: 101,
     },
   ]);
+  const getCanciones = async () => {
+    const _web3 = await getWeb3();
+    const accounts = await _web3.eth.getAccounts();
+    const mainInstance = new _web3.eth.Contract(
+      Migrations.abi,
+      "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f"
+    );
+    const cancionestemp = [];
+    const songCount = await mainInstance.methods.songsCount().call();
+    for (let index = songCount; index >= 1; index--) {
+      const file = await mainInstance.methods.songs(index).call();
+      if (id == file.id) {
+        cancionestemp.push(file);
+      }
+    }
+    mainInstance.address = "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f";
+    setCanciones(cancionestemp);
+  };
   const [album, setAlbum] = useState({
     id: 101,
     category_id: 1,
@@ -64,8 +83,20 @@ const PlaylistPage = (props) => {
       );
     });
   };
+  const agregarCancion = async (nombre, duracion, genero, idAlbum) => {
+    const _web3 = await getWeb3();
+    const accounts = await _web3.eth.getAccounts();
+    const mainInstance = new _web3.eth.Contract(
+      Migrations.abi,
+      "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f"
+    );
+    console.log(mainInstance);
+    mainInstance.address = "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f";
+    mainInstance.methods
+      .addSong(idAlbum, nombre, duracion, genero)
+      .send({ from: accounts[0] });
+  };
   const guardarcancion = () => {
-    alert(id);
     const nuevascanciones = [];
     cancion.nombre = document.getElementById("nombre").value;
     cancion.duracion = document.getElementById("duracion").value;
@@ -78,6 +109,12 @@ const PlaylistPage = (props) => {
       nuevascanciones.push(element);
     }
     setCanciones(nuevascanciones);
+    agregarCancion(
+      document.getElementById("nombre").value,
+      document.getElementById("duracion").value,
+      document.getElementById("genero").value,
+      id
+    );
     setModalnsertarCancion(false);
     renderCanciones();
     Confirm.open({
@@ -86,6 +123,9 @@ const PlaylistPage = (props) => {
       onok: () => {},
     });
   };
+  useEffect(() => {
+    getCanciones();
+  }, []);
   return (
     <div className="playlistPage">
       <div className="mainInner">

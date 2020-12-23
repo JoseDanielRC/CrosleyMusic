@@ -8,8 +8,8 @@ import firestore from "./Fire";
 import "./App.scss";
 import getWeb3 from "./getWeb3";
 import Web3 from "web3";
+import Albums from "./contracts/Albums.json";
 import Migrations from "./contracts/Migrations.json";
-
 const App = () => {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +21,8 @@ const App = () => {
   let web3 = null;
   let accounts = null;
   let contract = null;
-  let [albumAdresses, setAlbumAdresses] = useState([]);
+  const [albumes, setAlbumes] = useState([]);
+  const [cancionesB, setCanciones] = useState([]);
   const clearInputs = () => {
     setEmail("");
     setPassword("");
@@ -95,9 +96,9 @@ const App = () => {
       }
     });
   };
-  const addAlbumAddresses = async (addressAdd) => {
+  /*const addAlbumAddresses = async (addressAdd) => {
     albumAdresses.push(addressAdd);
-  };
+  };*/
   const web3blockchain = async () => {
     try {
       // Get network provider and web3 mainInstance.
@@ -106,39 +107,81 @@ const App = () => {
       const accounts = await _web3.eth.getAccounts();
 
       // Get the contract mainInstance.
-      const networkId = 5777;
+      //const networkId = 5777;
       //const web32 = new Web3("https://localhost:5777");
       // const networkId = await _web3.eth.net.getId();
-      const deployedNetwork = Migrations.networks[networkId];
+      //const deployedNetwork = Migrations.networks[networkId];
       const mainInstance = new _web3.eth.Contract(
         Migrations.abi,
-        deployedNetwork && deployedNetwork.address
+        "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f"
       );
       console.log(mainInstance);
-      mainInstance.address = "0xDc0C23094ebd97506deC5204Cc3cDf489eD8536f";
-      alert(JSON.stringify(accounts[0]));
-      mainInstance.methods
-        .setData(
-          "YHLQMDLG",
-          "Bad Bunny",
-          "https://images.genius.com/aa1c8b77f382d4d32ad97002ab823680.1000x1000x1.png"
-        )
-        .send({ from: accounts[0] });
+      mainInstance.address = "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f";
+      const mainInstance2 = new _web3.eth.Contract(
+        Albums.abi,
+        "0xDD94B007C727457294f01f6225B81ba522014BaD"
+      );
+      mainInstance2.address = "0xDD94B007C727457294f01f6225B81ba522014BaD";
+
+      /*mainInstance.methods
+        .addSong("101", "Otra noche en miami", "3:10", "Trap")
+        .send({ from: accounts[0] });*/
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      console.log("methods", mainInstance.methods);
-      // this.setState({ web3, accounts, contract: mainInstance }, this.initiate);
+      //console.log("methods", mainInstance.methods);
+      const cancionestemp = [];
+      const albumestemp = [];
+      //setAlbumAdresses(albumes);
+      const songCount = await mainInstance.methods.songsCount().call();
+      for (let index = songCount; index >= 1; index--) {
+        const file = await mainInstance.methods.songs(index).call();
+        //console.log("cancion", file);
+        cancionestemp.push(file);
+      }
+      const albumCount = await mainInstance2.methods.albumsCount().call();
+      for (let index = albumCount; index >= 1; index--) {
+        const file = await mainInstance2.methods.albums(index).call();
+        //console.log("album", file);
+        albumestemp.push(file);
+      }
+      setAlbumes(albumestemp);
+      setCanciones(cancionestemp);
     } catch (error) {
-      // Catch any errors for any of the above operations.
-      /*alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
-      );*/
       alert(error);
     }
+  };
+  const agregarAlbum = async (id, nombre, artista) => {
+    try {
+      const _web3 = await getWeb3();
+      const accounts = await _web3.eth.getAccounts();
+      const mainInstance2 = new _web3.eth.Contract(
+        Albums.abi,
+        "0xDD94B007C727457294f01f6225B81ba522014BaD"
+      );
+      alert("312");
+      mainInstance2.address = "0xDD94B007C727457294f01f6225B81ba522014BaD";
+      mainInstance2.methods
+        .addAlbum(id, nombre, artista)
+        .send({ from: accounts[0] });
+    } catch (error) {}
+  };
+  const agregarCancion = async (nombre, duracion, genero, idAlbum) => {
+    const _web3 = await getWeb3();
+    const accounts = await _web3.eth.getAccounts();
+    const mainInstance = new _web3.eth.Contract(
+      Migrations.abi,
+      "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f"
+    );
+    console.log(mainInstance);
+    mainInstance.address = "0xBB8cE0a4FE461e8577dcCc4505717Cb2940C941f";
+    mainInstance.methods
+      .addSong(idAlbum, nombre, duracion, genero)
+      .send({ from: accounts[0] });
   };
   useEffect(() => {
     authListener();
     web3blockchain();
+    //agregarAlbum();
   }, []);
   return (
     <div>
@@ -147,7 +190,12 @@ const App = () => {
           <div className="outerWrap">
             <div className="App">
               <Nav handleLogout={handleLogout} />
-              <Main />
+              <Main
+                addAlbum={agregarAlbum}
+                albumes={albumes}
+                canciones={cancionesB}
+                addSong={agregarCancion}
+              />
             </div>
             <div className="musicControls">
               Crosley Music Copyright ©2020
